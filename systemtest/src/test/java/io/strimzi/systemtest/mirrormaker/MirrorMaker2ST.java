@@ -24,6 +24,7 @@ import io.strimzi.api.kafka.model.template.DeploymentStrategy;
 import io.strimzi.systemtest.AbstractST;
 import io.strimzi.systemtest.Constants;
 import io.strimzi.systemtest.Environment;
+import io.strimzi.systemtest.annotations.IsolatedTest;
 import io.strimzi.systemtest.annotations.ParallelTest;
 import io.strimzi.systemtest.cli.KafkaCmdClient;
 import io.strimzi.systemtest.kafkaclients.internalClients.InternalKafkaClient;
@@ -91,7 +92,7 @@ class MirrorMaker2ST extends AbstractST {
     private final int messagesCount = 200;
 
     @SuppressWarnings({"checkstyle:MethodLength"})
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     void testMirrorMaker2(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
         String kafkaClusterSourceName = clusterName + "-source";
@@ -243,7 +244,7 @@ class MirrorMaker2ST extends AbstractST {
      * Test mirroring messages by MirrorMaker 2.0 over tls transport using mutual tls auth
      */
     @SuppressWarnings({"checkstyle:MethodLength"})
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     @Tag(ACCEPTANCE)
     void testMirrorMaker2TlsAndTlsClientAuth(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
@@ -445,7 +446,7 @@ class MirrorMaker2ST extends AbstractST {
      * Test mirroring messages by MirrorMaker 2.0 over tls transport using scram-sha-512 auth
      */
     @SuppressWarnings({"checkstyle:MethodLength"})
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     void testMirrorMaker2TlsAndScramSha512Auth(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
         String kafkaClusterSourceName = clusterName + "-source";
@@ -656,7 +657,7 @@ class MirrorMaker2ST extends AbstractST {
         LOGGER.info("Docker images verified");
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     @Tag(SCALABILITY)
     void testScaleMirrorMaker2Subresource(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
@@ -698,7 +699,7 @@ class MirrorMaker2ST extends AbstractST {
         }
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     void testMirrorMaker2CorrectlyMirrorsHeaders(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
         String kafkaClusterSourceName = clusterName + "-source";
@@ -762,7 +763,7 @@ class MirrorMaker2ST extends AbstractST {
         assertThat(log, containsString(header2));
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     @Tag(SCALABILITY)
     void testScaleMirrorMaker2ToZero(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
@@ -800,7 +801,7 @@ class MirrorMaker2ST extends AbstractST {
         });
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     void testIdentityReplicationPolicy(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
         String kafkaClusterSourceName = clusterName + "-source";
@@ -839,7 +840,6 @@ class MirrorMaker2ST extends AbstractST {
             .withListenerName(Constants.PLAIN_LISTENER_DEFAULT_NAME)
             .build();
 
-        // TODO: MAKE TESTUTILS...
         internalKafkaClient.assertSentAndReceivedMessages(
             internalKafkaClient.sendMessagesPlain(),
             internalKafkaClient.receiveMessagesPlain()
@@ -863,7 +863,7 @@ class MirrorMaker2ST extends AbstractST {
         assertThat(kafkaTopicSpec.get(1), equalTo("PartitionCount:3"));
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     void testHostAliases(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
         String kafkaClusterSourceName = clusterName + "-source";
@@ -896,7 +896,7 @@ class MirrorMaker2ST extends AbstractST {
         assertThat(output, containsString(etcHostsData));
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     void testConfigureDeploymentStrategy(ExtensionContext extensionContext) {
         String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
         String kafkaClusterSourceName = clusterName + "-source";
@@ -947,7 +947,7 @@ class MirrorMaker2ST extends AbstractST {
         assertThat(kmm2.getSpec().getTemplate().getDeployment().getDeploymentStrategy(), is(DeploymentStrategy.ROLLING_UPDATE));
     }
 
-    @ParallelTest
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
     @SuppressWarnings({"checkstyle:MethodLength"})
     void testRestoreOffsetsInConsumerGroup(ExtensionContext extensionContext) {
         final String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
