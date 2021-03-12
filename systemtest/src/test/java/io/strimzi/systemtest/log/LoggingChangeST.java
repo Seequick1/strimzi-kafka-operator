@@ -1081,9 +1081,10 @@ class LoggingChangeST extends AbstractST {
         assertThat("MirrorMaker2 pod should not roll", DeploymentUtils.depSnapshot(KafkaMirrorMaker2Resources.deploymentName(clusterName)), equalTo(mm2Snapshot));
     }
 
-    @Test
-    void testNotExistingCMSetsDefaultLogging() {
+    @IsolatedTest("Using more tha one Kafka cluster in one namespace")
+    void testNotExistingCMSetsDefaultLogging(ExtensionContext extensionContext) {
         String defaultProps = TestUtils.getFileAsString(TestUtils.USER_PATH + "/../cluster-operator/src/main/resources/kafkaDefaultLoggingProperties");
+        String clusterName = mapTestWithClusterNames.get(extensionContext.getDisplayName());
 
         String cmData = "log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender\n" +
             "log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout\n" +
@@ -1105,12 +1106,12 @@ class LoggingChangeST extends AbstractST {
         kubeClient().getClient().configMaps().inNamespace(NAMESPACE).createOrReplace(configMap);
 
         LOGGER.info("Deploying Kafka with custom logging");
-        KafkaResource.createAndWaitForReadiness(KafkaResource.kafkaPersistent(clusterName, 3, 1)
+        resourceManager.createResource(extensionContext, KafkaTemplates.kafkaPersistent(clusterName, 3, 1)
             .editOrNewSpec()
                 .editKafka()
                 .withExternalLogging(new ExternalLoggingBuilder()
                     .withNewValueFrom()
-                        .withNewConfigMapKeyRef("log4j.properties", "external-cm", false)
+                        .withConfigMapKeyRef(new ConfigMapKeySelector("log4j.properties", "external-cm", false))
                     .endValueFrom()
                     .build())
                 .endKafka()
@@ -1128,7 +1129,7 @@ class LoggingChangeST extends AbstractST {
         KafkaResource.replaceKafkaResource(clusterName, kafka -> kafka.getSpec().getKafka().setLogging(
             new ExternalLoggingBuilder()
                 .withNewValueFrom()
-                    .withNewConfigMapKeyRef("log4j.properties", "not-existing-cm-name", false)
+                .withConfigMapKeyRef(new ConfigMapKeySelector("log4j.properties", "not-existing-cm-name", false))
                 .endValueFrom()
                 .build()));
 
